@@ -12,36 +12,42 @@ namespace Traffic
         /// Route has start point A and end point B.
         /// All time in hours
         /// </summary>
-        public double aBeginTime;
-        public double aEndTime;
-        public double bBeginTime;
-        public double bEndTime;
-        public double busInterval;
+        public int aBeginTime;//int fromfile 5:00 => 300
+        public int aEndTime;//int from file 24:00 => 1439
+        public int bBeginTime;//int from file 
+        public int bEndTime;//int from file 
+        public int busInterval;//int from file = 10
         public List<string> stations;
-        public double betweenStationInterval;
+        public int betweenStationInterval;// int in file = 5
+        public DateTime currentTimeInDateTime = DateTime.Now;
 
-        public Route(double aBeginTime, double aEndTime)
+        public Route(int aBeginTime, int aEndTime)
         {
             this.aBeginTime = aBeginTime;
             this.aEndTime = aEndTime;
             this.bBeginTime = aBeginTime;
             this.bEndTime = aEndTime;
-            this.busInterval = 1;
-            this.stations = new List<string> { "Station1", "Station2", "Station3", "Station4" };
-            this.betweenStationInterval = 0.5;
+            this.busInterval = 120; //5
+            this.stations = new List<string> { "Station1", "Station2", "Station3", "Station4" };//class Station
+            this.betweenStationInterval = 5;// 10
         }
 
-        public string GetNearestBusTime(double currenTime, string station)
+        public string GetNearestBusTime(string station)//получение текущего времени, когда придет ближайший автобус
         {
-            var stationIndex = stations.IndexOf(station);
-            var timeFromPointA = stationIndex * betweenStationInterval;
-            var time = aBeginTime;
+            int currenTime = currentTimeInDateTime.Hour*60 + currentTimeInDateTime.Minute;
+
+            int stationIndex = stations.IndexOf(station);//getting by index
+            int timeFromPointA = stationIndex * betweenStationInterval;//both parametrs should be in file; interval between stations will be random
+            
+            int time = aBeginTime;
             while (time <= aEndTime)
             {
-                var stationTime = time + timeFromPointA;
+                int stationTime = time + timeFromPointA;
+
                 if (stationTime >= currenTime)
                 {
-                    return "Nearest bus time - " + stationTime.ToString() + " hours";
+                    int timeNeedToWait = stationTime - currenTime;
+                    return "Nearest bus to Station 1 will be in - " + timeNeedToWait.ToString() + " minutes";
                 }
                 time += busInterval;
             }
