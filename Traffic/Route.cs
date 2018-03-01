@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Traffic
 {
-    class Route
+    [Serializable]
+    public class Route
     {
         /// <summary>
         /// Route has start point A and end point B.
@@ -19,17 +20,6 @@ namespace Traffic
         public double busInterval;
         public List<string> stations;
         public double betweenStationInterval;
-
-        public Route(double aBeginTime, double aEndTime)
-        {
-            this.aBeginTime = aBeginTime;
-            this.aEndTime = aEndTime;
-            this.bBeginTime = aBeginTime;
-            this.bEndTime = aEndTime;
-            this.busInterval = 1;
-            this.stations = new List<string> { "Station1", "Station2", "Station3", "Station4" };
-            this.betweenStationInterval = 0.5;
-        }
 
         public string GetNearestBusTime(double currenTime, string station)
         {
