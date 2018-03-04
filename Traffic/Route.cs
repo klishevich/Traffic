@@ -4,48 +4,99 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Traffic
+namespace Traffic_Tsoy_171
 {
+    /// <summary>
+    /// Номер маршрута,
+    /// название,
+    /// время первого рейса из первой станции,
+    /// время последнего рейса из первой станции,
+    /// время первого рейса из последней станции,
+    /// время последнего рейса из последней станции,
+    /// интервал между автобусами,
+    /// список станции
+    /// </summary>
+
     class Route
     {
-        /// <summary>
-        /// Route has start point A and end point B.
-        /// All time in hours
-        /// </summary>
-        public double aBeginTime;
-        public double aEndTime;
-        public double bBeginTime;
-        public double bEndTime;
-        public double busInterval;
-        public List<string> stations;
-        public double betweenStationInterval;
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ABeginTime { get; set; }
+        public int AEndTime { get; set; }
+        public int BBeginTime { get; set; }
+        public int BEndTime { get; set; }
+        public int BusInterval { get; set; }
+        public List<Station> Stations { get; set; }
 
-        public Route(double aBeginTime, double aEndTime)
+        /// <summary>
+        /// Метод, который вначале по индексу станции
+        /// считает интервал до конечной точки вообще.
+        /// 
+        /// Потом обращается к другому методу и возвращает 
+        /// интервал ожидания автобуса с учетом настоящего времени.
+        /// </summary>
+
+        public int GetNearestBusTimeFirst(int indexStation)
         {
-            this.aBeginTime = aBeginTime;
-            this.aEndTime = aEndTime;
-            this.bBeginTime = aBeginTime;
-            this.bEndTime = aEndTime;
-            this.busInterval = 1;
-            this.stations = new List<string> { "Station1", "Station2", "Station3", "Station4" };
-            this.betweenStationInterval = 0.5;
+            int timeFromPointA = 0;
+            int indexOfLastStation = Stations.Count - 1;
+
+            for (int i = 0; i < indexStation; i++)
+            {
+                timeFromPointA += Stations[i].StationInterval;
+            }
+            return GetNearestTime(ABeginTime, AEndTime, timeFromPointA, indexOfLastStation);
         }
 
-        public string GetNearestBusTime(double currenTime, string station)
+        /// <summary>
+        /// Метод, который вначале по индексу станции
+        /// считает интервал до начальной точки вообще.
+        /// 
+        /// Потом обращается к другому методу и возвращает 
+        /// интервал ожидания автобуса с учетом настоящего времени.
+        /// </summary>
+
+        public int GetNearestBusTimeLast(int indexStation)
         {
-            var stationIndex = stations.IndexOf(station);
-            var timeFromPointA = stationIndex * betweenStationInterval;
-            var time = aBeginTime;
-            while (time <= aEndTime)
+            int timeFromPointB = 0;
+            int indexOfLastStation = Stations.Count - 1;
+
+            for (int i = indexOfLastStation; i > indexStation; i--)
             {
-                var stationTime = time + timeFromPointA;
+                timeFromPointB += Stations[i - 1].StationInterval;
+            }
+            return GetNearestTime(BBeginTime, BEndTime, timeFromPointB, 0);
+        }
+
+        /// <summary>
+        /// Метод, который переводит текущее время в целочисленный тип.
+        /// Затем учитывает интервалы между автобусами
+        /// и считает непосредственно время прибытия автобуса на введенную станцию.
+        /// Потом из этого значения времени вычитается значение текущего 
+        /// и выводится время, которое надо ждать прибытия автобуса.
+        /// </summary>
+
+        public int GetNearestTime(int beginTime, int endTime, int timeFromPoint, int indexOfLastStation) //в процессе
+        {
+            DateTime currentTimeInDateTime = DateTime.Now;
+            int currenTime = currentTimeInDateTime.Hour * 60 + currentTimeInDateTime.Minute;
+
+            if (currenTime < 60)
+                currenTime = 1440 + currenTime;
+
+            int time = beginTime;
+            while (time <= endTime)
+            {
+                int stationTime = time + timeFromPoint;
+
                 if (stationTime >= currenTime)
                 {
-                    return "Nearest bus time - " + stationTime.ToString() + " hours";
+                    int timeNeedToWait = stationTime - currenTime;
+                    return timeNeedToWait;
                 }
-                time += busInterval;
+                time += BusInterval;
             }
-            return "No buses for today";
+            return 0;
         }
     }
 }
