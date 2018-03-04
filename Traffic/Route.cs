@@ -4,33 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Traffic
+namespace Traffic_Tsoy_171
 {
-    /// <summary>
-    /// Номер маршрута,
-    /// название,
-    /// интервал до следующей станции
-    /// </summary>
-    class Station
-	{
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int StationInterval { get; set; }
-	}
-
-    /// <summary>
-    /// Название маршрута,
-    /// время ожидания,
-    /// конечная точка,
-    /// </summary>
-
-    class Time
-    {
-        public string RouteName {get; set; }
-        public int Wait { get; set; }
-        public string Name { get; set; }
-    }
-
     /// <summary>
     /// Номер маршрута,
     /// название,
@@ -44,16 +19,15 @@ namespace Traffic
 
     class Route
     {
-        public int Id {get; set;}
+        public int Id { get; set; }
         public string Name { get; set; }
-        public int ABeginTime {get; set;}
-        public int AEndTime {get; set;}
-        public int BBeginTime {get; set;}
-        public int BEndTime {get; set;}
-        public int BusInterval{get; set;}
+        public int ABeginTime { get; set; }
+        public int AEndTime { get; set; }
+        public int BBeginTime { get; set; }
+        public int BEndTime { get; set; }
+        public int BusInterval { get; set; }
         public List<Station> Stations { get; set; }
 
-        
         /// <summary>
         /// Метод, который вначале по индексу станции
         /// считает интервал до конечной точки вообще.
@@ -65,14 +39,15 @@ namespace Traffic
         public int GetNearestBusTimeFirst(int indexStation)
         {
             int timeFromPointA = 0;
-            int indexOfLastStation = Stations.Count-1;
-           
+            int indexOfLastStation = Stations.Count - 1;
+
             for (int i = 0; i < indexStation; i++)
-			{
-                timeFromPointA +=Stations[i].StationInterval;
-			}
-            return GetNearestTime(ABeginTime, AEndTime, timeFromPointA, indexOfLastStation); 
+            {
+                timeFromPointA += Stations[i].StationInterval;
+            }
+            return GetNearestTime(ABeginTime, AEndTime, timeFromPointA, indexOfLastStation);
         }
+
         /// <summary>
         /// Метод, который вначале по индексу станции
         /// считает интервал до начальной точки вообще.
@@ -84,13 +59,13 @@ namespace Traffic
         public int GetNearestBusTimeLast(int indexStation)
         {
             int timeFromPointB = 0;
-            int indexOfLastStation = Stations.Count-1;
+            int indexOfLastStation = Stations.Count - 1;
 
             for (int i = indexOfLastStation; i > indexStation; i--)
-			{
-                timeFromPointB +=Stations[i-1].StationInterval;
-			}
-            return GetNearestTime(BBeginTime, BEndTime, timeFromPointB, 0); 
+            {
+                timeFromPointB += Stations[i - 1].StationInterval;
+            }
+            return GetNearestTime(BBeginTime, BEndTime, timeFromPointB, 0);
         }
 
         /// <summary>
@@ -104,10 +79,10 @@ namespace Traffic
         public int GetNearestTime(int beginTime, int endTime, int timeFromPoint, int indexOfLastStation) //в процессе
         {
             DateTime currentTimeInDateTime = DateTime.Now;
-            int currenTime = currentTimeInDateTime.Hour*60 + currentTimeInDateTime.Minute;
+            int currenTime = currentTimeInDateTime.Hour * 60 + currentTimeInDateTime.Minute;
 
-            if (currenTime<60)
-                currenTime = 1440+currenTime;
+            if (currenTime < 60)
+                currenTime = 1440 + currenTime;
 
             int time = beginTime;
             while (time <= endTime)
@@ -121,7 +96,7 @@ namespace Traffic
                 }
                 time += BusInterval;
             }
-          return 0;
+            return 0;
         }
     }
 }
